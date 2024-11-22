@@ -1,0 +1,18 @@
+SELECT 
+e1.surname+' '+e1.name+' '+e1.lastname  'ФИО', 
+SUM(m1.working_hours) 'Количество рабочих часов'
+FROM employee as e1 
+ INNER JOIN mark_rating_sheet as m1
+  ON m1.employee_id = e1.id
+GROUP BY e1.surname, e1.name, e1.lastname, e1.id, e1.ref_department_id
+/*Выдать тех сотрудников, у которых количество рабочих часов больше среднего на их кафедре*/
+HAVING 
+ SUM(m1.working_hours)  
+ >=
+    (SELECT AVG(sum_hours2)  
+ FROM  
+ (SELECT SUM(m3.working_hours) as sum_hours2
+ FROM employee as e3 
+  INNER JOIN mark_rating_sheet as m3
+   ON m3.employee_id = e3.id
+ WHERE e3.ref_department_id = e1.ref_department_id) sum_hours)
